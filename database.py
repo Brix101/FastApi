@@ -8,3 +8,11 @@ DATABASE_URL = "mysql+mysqlconnector://root:root@127.0.0.2:3306/fastapi-todo-app
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False,autoflush=False,bind=engine)
 Base = declarative_base()
+
+# Dependency
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
