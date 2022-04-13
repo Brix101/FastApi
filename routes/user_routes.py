@@ -1,5 +1,5 @@
-from fastapi import APIRouter,Depends,Response,HTTPException
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter,Depends,Response,HTTPException,status
+from sqlalchemy import null
 from sqlalchemy.orm import Session
 from database import get_db
 
@@ -35,4 +35,10 @@ async def login_user(response:Response,user:UserSchema,db:Session = Depends(get_
     
     except Exception as e:
         return str(e)
+
+@router.get("/logout")
+async def logout_user(response:Response):
+        
+    response.delete_cookie(key="session")
+    return status.HTTP_200_OK
     

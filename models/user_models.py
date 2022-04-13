@@ -23,4 +23,4 @@ class UserModel(Base):
         return ph.verify(self.password,password)
         
     def generate_token(self):
-        return jwt.encode({"id": self.id, "username": self.username},"secret")
+        return jwt.encode({"id": self.id, "username": self.username},"secret", algorithm="HS256")

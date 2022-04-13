@@ -1,6 +1,9 @@
-from fastapi import Depends, FastAPI
+from fastapi import  FastAPI,Request
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import null
 from database import engine,Base
+import jwt
+
 
 from routes import todo_routes,user_routes
 
@@ -26,6 +29,16 @@ app.add_middleware(
 # import routes
 app.include_router(todo_routes.router)
 app.include_router(user_routes.router)
+
+@app.middleware("http")
+async def token_encoder(request: Request,call_next): 
+    token = request.cookies.get("session")
+    if(token is not None):
+        user=jwt.decode(token, "secret", algorithms=["HS256"])
+    
+    response.user = user
+    response = await call_next(request)
+    return response
 
 
 @app.get("/")
