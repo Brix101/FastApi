@@ -1,5 +1,5 @@
-from fastapi import Depends, FastAPI,status,HTTPException
-from sqlalchemy.orm import Session
+from fastapi import Depends, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from database import engine,Base
 
 from routes import todo_routes,user_routes
@@ -7,6 +7,21 @@ from routes import todo_routes,user_routes
 Base.metadata.create_all(engine)
 
 app = FastAPI(title="Fast Api Todo App")
+
+origins = [
+    "http://localhost.tiangolo.com",
+    "https://localhost.tiangolo.com",
+    "http://localhost",
+    "http://localhost:8080",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # import routes
 app.include_router(todo_routes.router)

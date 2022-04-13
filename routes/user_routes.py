@@ -1,5 +1,5 @@
-from cmath import log
-from fastapi import APIRouter,Depends,status,HTTPException
+from fastapi import APIRouter,Depends,Response,HTTPException
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from database import get_db
 
@@ -22,7 +22,7 @@ async def add_user(user:UserSchema, db : Session = Depends(get_db)):
         raise HTTPException(400, detail=e.orig.msg)
     
 @router.post("/login")
-async def login_user(user:UserSchema,db:Session = Depends(get_db)):
+async def login_user(response:Response,user:UserSchema,db:Session = Depends(get_db)):
     login_user = db.query(UserModel).filter(UserModel.username == user.username).first()
     if(login_user is None):
             raise HTTPException(404, detail="Username Not Found")
@@ -30,7 +30,9 @@ async def login_user(user:UserSchema,db:Session = Depends(get_db)):
     try:          
         login_user.password_match(user.password)
         
-        return "Welcome {}".format(login_user.username)
+        response.set_cookie(key="session", value=login_user.generate_token())
+        return {"message": "Come to the dark side, we have cookies {}".format(login_user.username)}
+    
     except Exception as e:
         return str(e)
     

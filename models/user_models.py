@@ -1,3 +1,4 @@
+import jwt
 from sqlalchemy.schema import Column
 from sqlalchemy.types import String,Integer
 from database import Base
@@ -21,4 +22,5 @@ class UserModel(Base):
     def password_match(self,password):
         return ph.verify(self.password,password)
         
-    
+    def generate_token(self):
+        return jwt.encode({"id": self.id, "username": self.username},"secret")
